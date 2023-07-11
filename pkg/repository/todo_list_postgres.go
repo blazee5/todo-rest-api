@@ -1,7 +1,6 @@
 package repository
 
 import (
-	"errors"
 	"fmt"
 	todo "github.com/blazee5/todo-rest-api/models"
 	"github.com/jmoiron/sqlx"
@@ -55,9 +54,7 @@ func (r *TodoListPostgres) GetById(userId int, listId int) (todo.TodoList, error
 
 	query := fmt.Sprintf("SELECT tl.id, tl.title, tl.description FROM %s tl INNER JOIN %s ul ON tl.id = ul.list_id WHERE ul.list_id = $1 AND ul.user_id = $2", todoListTable, usersListTable)
 	err := r.db.Get(&list, query, listId, userId)
-	if err != nil {
-		return list, errors.New("you are not user")
-	}
+
 	return list, err
 }
 
@@ -80,7 +77,8 @@ func (r *TodoListPostgres) Update(userId int, listId int, input todo.UpdateListI
 
 	setQuery := strings.Join(setValues, ", ")
 
-	query := fmt.Sprintf("UPDATE %s tl SET %s FROM %s ul tl.id = ul.list_id AND ul.list_id = $%d AND ul.user_id = $%d", todoListTable, setQuery, usersListTable, argId, argId+1)
+	query := fmt.Sprintf("UPDATE %s tl SET %s FROM %s ul WHERE tl.id = ul.list_id AND ul.list_id=$%d AND ul.user_id=$%d",
+		todoListTable, setQuery, usersListTable, argId, argId+1)
 
 	args = append(args, listId, userId)
 
