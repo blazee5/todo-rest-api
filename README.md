@@ -1,2 +1,2 @@
 # todo-rest-api
-REST API client created on goland for TODO app
+REST API client written in golang for TODO app
